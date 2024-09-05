@@ -6,21 +6,30 @@ from sklearn.preprocessing import MinMaxScaler
 import skfuzzy as fuzz
 
 # Set the style for plots
-#plt.style.use('seaborn')
+plt.style.use('seaborn')
 
 # Streamlit App Title and Description
 st.title('Energy Consumption Clustering for Houses using Fuzzy C-Means')
+
 st.write("""
-This app clusters 300 houses based on their **Max** and **Min Energy Consumption per Day**.
-The energy data is scaled between 0 and 10, and Fuzzy C-means clustering is applied with 3 clusters.
+This app allows you to cluster houses based on their **Max** and **Min Energy Consumption per Day** using Fuzzy C-means clustering. 
+You can adjust the number of houses and clusters using the sidebar.
+The energy data is scaled between 0 and 10.
 """)
+
+# --- Sidebar Inputs ---
+st.sidebar.header("User Input Parameters")
+
+# Slider to select the number of houses
+num_houses = st.sidebar.slider("Select the number of houses", min_value=50, max_value=1000, value=300, step=50)
+
+# Slider to select the number of clusters
+num_clusters = st.sidebar.slider("Select the number of clusters", min_value=2, max_value=10, value=3)
 
 # Set random seed for reproducibility
 np.random.seed(42)
 
-# Generate sample data for 300 houses
-num_houses = 300
-
+# --- Generate Sample Data ---
 # Max and Min Energy Consumed per Day (kWh)
 max_energy_consumed = np.random.randint(50, 500, size=num_houses)  # Max energy between 50 to 500 kWh
 min_energy_consumed = np.random.randint(50, 500, size=num_houses)  # Min energy between 50 to 500 kWh
@@ -50,9 +59,8 @@ scaled_df = pd.DataFrame(scaled_data, columns=['Max Energy Consumed per Day (Sca
 st.write(scaled_df.head())
 
 # --- Fuzzy C-means Clustering ---
-st.subheader('Fuzzy C-means Clustering with 3 Clusters')
+st.subheader(f'Fuzzy C-means Clustering with {num_clusters} Clusters')
 
-num_clusters = 3
 # Apply Fuzzy C-Means (FCM)
 cntr, u, u0, d, jm, p, fpc = fuzz.cluster.cmeans(
     scaled_data.T, num_clusters, 2, error=0.005, maxiter=1000, init=None)
@@ -79,7 +87,7 @@ ax1.set_ylabel('Min Energy Consumed per Day (Scaled)')
 st.pyplot(fig1)
 
 # 2. Scatter Plot of Clusters with Different Colors
-st.write("### Fuzzy C-means Clustering of Max and Min Energy Consumption")
+st.write(f"### Fuzzy C-means Clustering of Max and Min Energy Consumption (Clusters = {num_clusters})")
 fig2, ax2 = plt.subplots(figsize=(8, 6))
 colors = plt.cm.get_cmap('tab10', num_clusters)
 
@@ -91,11 +99,26 @@ for cluster in range(num_clusters):
     
 # Plot centroids
 ax2.scatter(centroids[:, 0], centroids[:, 1], color='black', marker='X', s=200, label='Centroids')
-ax2.set_title('Fuzzy C-means Clustering of Max and Min Energy Consumption')
+ax2.set_title(f'Fuzzy C-means Clustering of Max and Min Energy Consumption (Clusters = {num_clusters})')
 ax2.set_xlabel('Max Energy Consumed per Day (Scaled)')
 ax2.set_ylabel('Min Energy Consumed per Day (Scaled)')
 ax2.legend()
 st.pyplot(fig2)
+
+# --- Membership Levels Plot ---
+st.subheader('Membership Levels for Each Cluster')
+
+# Plot membership levels for the first 20 data points (to avoid overcrowding)
+st.write("### Membership Levels for the First 20 Data Points")
+fig3, ax3 = plt.subplots(figsize=(10, 6))
+for i in range(num_clusters):
+    ax3.plot(u[i, :20], label=f'Membership for Cluster {i + 1}', marker='o')
+
+ax3.set_title('Membership Levels for the First 20 Data Points')
+ax3.set_xlabel('Data Point Index')
+ax3.set_ylabel('Membership Level')
+ax3.legend()
+st.pyplot(fig3)
 
 # Optional: Display final data with clusters
 st.subheader('Clustered Data')
@@ -111,6 +134,6 @@ csv = convert_df_to_csv(df)
 st.download_button(
     label="Download Clustered Data as CSV",
     data=csv,
-    file_name='fuzzy_clustered_energy_consumption.csv',
+    file_name=f'fuzzy_clustered_energy_consumption_{num_houses}_houses.csv',
     mime='text/csv',
 )
