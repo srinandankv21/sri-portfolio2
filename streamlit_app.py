@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 import skfuzzy as fuzz
 
 # Set the style for plots
-plt.style.use('seaborn')
+#plt.style.use('seaborn')
 
 # Streamlit App Title and Description
 st.title('Energy Consumption Clustering for Houses using Fuzzy C-Means')
