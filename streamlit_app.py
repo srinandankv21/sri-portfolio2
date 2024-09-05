@@ -110,16 +110,16 @@ for i in range(num_clusters):
     df[f'membership_cluster_{i}'] = u[i, :]
 
 # Plot membership levels for the first cluster using Seaborn
-st.write(f"### Membership Levels for Cluster 0")
-fig3, ax3 = plt.subplots(figsize=(8, 6))
-sns.scatterplot(x='Max Energy Consumed per Day (kWh)', y='Min Energy Consumed per Day (kWh)', 
-                hue='membership_cluster_0', data=df, palette='coolwarm')
-ax3.set_title('Membership Levels for Cluster 0')
-ax3.set_xlabel('Max Energy Consumed per Day (kWh)')
-ax3.set_ylabel('Min Energy Consumed per Day (kWh)')
-st.pyplot(fig3)
+#st.write(f"### Membership Levels for Cluster 0")
+#fig3, ax3 = plt.subplots(figsize=(8, 6))
+#sns.scatterplot(x='Max Energy Consumed per Day (kWh)', y='Min Energy Consumed per Day (kWh)', 
+ #               hue='membership_cluster_0', data=df, palette='coolwarm')
+#ax3.set_title('Membership Levels for Cluster 0')
+#ax3.set_xlabel('Max Energy Consumed per Day (kWh)')
+#ax3.set_ylabel('Min Energy Consumed per Day (kWh)')
+#st.pyplot(fig3)
 
-# Optional: Plot membership levels for other clusters
+# Plot membership levels for other clusters
 for i in range(num_clusters):
     st.write(f"### Membership Levels for Cluster {i}")
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -129,6 +129,10 @@ for i in range(num_clusters):
     ax.set_xlabel('Max Energy Consumed per Day (kWh)')
     ax.set_ylabel('Min Energy Consumed per Day (kWh)')
     st.pyplot(fig)
+
+# Display final data with clusters
+st.subheader('Clustered Data')
+st.write(df.head())
 
 # Optional: Download clustered data
 @st.cache
