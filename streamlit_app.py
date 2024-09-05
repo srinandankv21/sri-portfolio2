@@ -22,7 +22,7 @@ The energy data is scaled between 0 and 10.
 st.sidebar.header("User Input Parameters")
 
 # Slider to select the number of houses
-num_houses = st.sidebar.slider("Select the number of houses", min_value=50, max_value=1000, value=300, step=50)
+num_houses = st.sidebar.slider("Select the number of houses", min_value=50, max_value=30000, value=300, step=50)
 
 # Slider to select the number of clusters
 num_clusters = st.sidebar.slider("Select the number of clusters", min_value=2, max_value=10, value=3)
