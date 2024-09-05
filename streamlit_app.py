@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.preprocessing import MinMaxScaler
 import skfuzzy as fuzz
 
@@ -34,14 +35,10 @@ np.random.seed(42)
 max_energy_consumed = np.random.randint(50, 500, size=num_houses)  # Max energy between 50 to 500 kWh
 min_energy_consumed = np.random.randint(50, 500, size=num_houses)  # Min energy between 50 to 500 kWh
 
-# Total Energy Consumed for the Month (assuming 30 days in a month)
-total_energy_consumed = np.random.randint(3000, 15000, size=num_houses)  # Total monthly energy
-
 # Create a DataFrame
 df = pd.DataFrame({
     'Max Energy Consumed per Day (kWh)': max_energy_consumed,
     'Min Energy Consumed per Day (kWh)': min_energy_consumed,
-    'Total Energy Consumed for the Month (kWh)': total_energy_consumed
 })
 
 # Display the first few rows of the data
@@ -52,7 +49,7 @@ st.write(df.head())
 st.subheader('Scaling Data between 0 and 10')
 # Scaling the 'Max' and 'Min' energy consumed between 0 and 10
 scaler = MinMaxScaler(feature_range=(0, 10))
-scaled_data = scaler.fit_transform(df[['Max Energy Consumed per Day (kWh)', 'Min Energy Consumed per Day (kWh)']])
+scaled_data = scaler.fit_transform(df)
 
 # Convert the scaled data back into a DataFrame
 scaled_df = pd.DataFrame(scaled_data, columns=['Max Energy Consumed per Day (Scaled)', 'Min Energy Consumed per Day (Scaled)'])
@@ -62,8 +59,8 @@ st.write(scaled_df.head())
 st.subheader(f'Fuzzy C-means Clustering with {num_clusters} Clusters')
 
 # Apply Fuzzy C-Means (FCM)
-cntr, u, u0, d, jm, p, fpc = fuzz.cluster.cmeans(
-    scaled_data.T, num_clusters, 2, error=0.005, maxiter=1000, init=None)
+cntr, u, _, _, _, _, _ = fuzz.cluster.cmeans(
+    scaled_data.T, num_clusters, 2, error=0.005, maxiter=1000)
 
 # Assign each data point to the cluster with the highest membership value
 cluster_labels = np.argmax(u, axis=0)
@@ -108,21 +105,30 @@ st.pyplot(fig2)
 # --- Membership Levels Plot ---
 st.subheader('Membership Levels for Each Cluster')
 
-# Plot membership levels for the first 20 data points (to avoid overcrowding)
-st.write("### Membership Levels for the First 20 Data Points")
-fig3, ax3 = plt.subplots(figsize=(10, 6))
+# Add membership levels to the DataFrame
 for i in range(num_clusters):
-    ax3.plot(u[i, :20], label=f'Membership for Cluster {i + 1}', marker='o')
+    df[f'membership_cluster_{i}'] = u[i, :]
 
-ax3.set_title('Membership Levels for the First 20 Data Points')
-ax3.set_xlabel('Data Point Index')
-ax3.set_ylabel('Membership Level')
-ax3.legend()
+# Plot membership levels for the first cluster using Seaborn
+st.write(f"### Membership Levels for Cluster 0")
+fig3, ax3 = plt.subplots(figsize=(8, 6))
+sns.scatterplot(x='Max Energy Consumed per Day (kWh)', y='Min Energy Consumed per Day (kWh)', 
+                hue='membership_cluster_0', data=df, palette='coolwarm')
+ax3.set_title('Membership Levels for Cluster 0')
+ax3.set_xlabel('Max Energy Consumed per Day (kWh)')
+ax3.set_ylabel('Min Energy Consumed per Day (kWh)')
 st.pyplot(fig3)
 
-# Optional: Display final data with clusters
-st.subheader('Clustered Data')
-st.write(df.head())
+# Optional: Plot membership levels for other clusters
+for i in range(num_clusters):
+    st.write(f"### Membership Levels for Cluster {i}")
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.scatterplot(x='Max Energy Consumed per Day (kWh)', y='Min Energy Consumed per Day (kWh)', 
+                    hue=f'membership_cluster_{i}', data=df, palette='coolwarm')
+    ax.set_title(f'Membership Levels for Cluster {i}')
+    ax.set_xlabel('Max Energy Consumed per Day (kWh)')
+    ax.set_ylabel('Min Energy Consumed per Day (kWh)')
+    st.pyplot(fig)
 
 # Optional: Download clustered data
 @st.cache
