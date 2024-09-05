@@ -1,5 +1,5 @@
 streamlit
-scikit
-scikit-fuzzy
+scikit-learn
 matplotlib
 seaborn
+scikit-fuzzy
