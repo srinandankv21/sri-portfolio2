@@ -35,10 +35,13 @@ np.random.seed(42)
 max_energy_consumed = np.random.randint(50, 500, size=num_houses)  # Max energy between 50 to 500 kWh
 min_energy_consumed = np.random.randint(50, 500, size=num_houses)  # Min energy between 50 to 500 kWh
 
+total_energy_consumed = np.random.randint(3000, 15000, size=num_houses)  # Total monthly energy
+
 # Create a DataFrame
 df = pd.DataFrame({
     'Max Energy Consumed per Day (kWh)': max_energy_consumed,
     'Min Energy Consumed per Day (kWh)': min_energy_consumed,
+    'Total Energy Consumed for the Month (kWh)': total_energy_consumed
 })
 
 # Display the first few rows of the data
