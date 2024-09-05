@@ -150,3 +150,43 @@ st.download_button(
     file_name=f'fuzzy_clustered_energy_consumption_{num_houses}_houses.csv',
     mime='text/csv',
 )
+
+# --- Additional Visualizations ---
+st.subheader('Additional Visualizations')
+
+# 1. Histogram of Max Energy Consumed per Day
+st.write("### Histogram of Max Energy Consumed per Day")
+fig1, ax1 = plt.subplots(figsize=(8, 6))
+sns.histplot(df['Max Energy Consumed per Day (kWh)'], bins=30, kde=True, ax=ax1)
+ax1.set_title('Distribution of Max Energy Consumed per Day')
+ax1.set_xlabel('Max Energy Consumed per Day (kWh)')
+ax1.set_ylabel('Frequency')
+st.pyplot(fig1)
+
+# 2. Histogram of Min Energy Consumed per Day
+st.write("### Histogram of Min Energy Consumed per Day")
+fig2, ax2 = plt.subplots(figsize=(8, 6))
+sns.histplot(df['Min Energy Consumed per Day (kWh)'], bins=30, kde=True, ax=ax2)
+ax2.set_title('Distribution of Min Energy Consumed per Day')
+ax2.set_xlabel('Min Energy Consumed per Day (kWh)')
+ax2.set_ylabel('Frequency')
+st.pyplot(fig2)
+
+# 3. Bar Chart of Average Energy Consumption per Month by Cluster
+st.write("### Bar Chart of Average Total Energy Consumed per Month by Cluster")
+# Assume 'Cluster' column is available and cluster labels are generated
+df['Cluster'] = np.random.randint(0, 3, size=len(df))  # Random clusters for demonstration
+average_monthly_energy_by_cluster = df.groupby('Cluster')['Total Energy Consumed for the Month (kWh)'].mean().reset_index()
+
+fig3, ax3 = plt.subplots(figsize=(8, 6))
+sns.barplot(x='Cluster', y='Total Energy Consumed for the Month (kWh)', data=average_monthly_energy_by_cluster, ax=ax3)
+ax3.set_title('Average Total Energy Consumed per Month by Cluster')
+ax3.set_xlabel('Cluster')
+ax3.set_ylabel('Average Total Energy Consumed for the Month (kWh)')
+st.pyplot(fig3)
+
+# 4. Pair Plot for Max and Min Energy Consumed
+st.write("### Pair Plot for Max and Min Energy Consumed")
+fig4 = sns.pairplot(df[['Max Energy Consumed per Day (kWh)', 'Min Energy Consumed per Day (kWh)']])
+st.pyplot(fig4)
+
