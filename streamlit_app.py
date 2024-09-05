@@ -52,7 +52,7 @@ st.write(df.head())
 st.subheader('Scaling Data between 0 and 10')
 # Scaling the 'Max' and 'Min' energy consumed between 0 and 10
 scaler = MinMaxScaler(feature_range=(0, 10))
-scaled_data = scaler.fit_transform(df)
+scaled_data = scaler.fit_transform(df[['Max Energy Consumed per Day (kWh)', 'Min Energy Consumed per Day (kWh)']])
 
 # Convert the scaled data back into a DataFrame
 scaled_df = pd.DataFrame(scaled_data, columns=['Max Energy Consumed per Day (Scaled)', 'Min Energy Consumed per Day (Scaled)'])
